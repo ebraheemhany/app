@@ -1,10 +1,9 @@
 import React from "react";
-import Home from "./main/Home/page";
 
 const page = () => {
   return (
-    <div className="w-full">
-      <Home />
+    <div className="w-full ">
+      <p>Sign up</p>
     </div>
   );
 };
