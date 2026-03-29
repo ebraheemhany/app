@@ -1,0 +1,65 @@
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, SignInData } from "@/Schema/Schema";
+import Input from "@/component/items/Input";
+import { User, Mail, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { signIn } from "@/services/auth.service";
+const SignInForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInData>({
+    resolver: zodResolver(signInSchema),
+  });
+
+  const onSubmit = async (data: SignInData) => {
+    try {
+      await signIn(data.email, data.password);
+      alert("login successfully!");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+  return (
+    <div className="w-full">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* email */}
+        <Input
+          name="email"
+          type="email"
+          placeholder="Email"
+          icon={<Mail className="w-5 h-5 text-gray-400" />}
+          register={register}
+          error={errors.email}
+        />
+
+        {/* password */}
+        <Input
+          name="password"
+          type="password"
+          placeholder="Password"
+          icon={<ShieldAlert className="w-5 h-5 text-gray-400" />}
+          register={register}
+          error={errors.password}
+        />
+
+        <div className="flex items-center justify-center">
+          <button className="bg-blue-700 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
+            Sign In
+          </button>
+        </div>
+        <p className="text-white text-[16px] mb-3 ml-3 ">
+          Don't have an account?{" "}
+          <Link href={"/sign-up"} className="text-blue-700 cursor-pointer ">
+            [Sign Up]
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default SignInForm;

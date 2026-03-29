@@ -1,14 +1,16 @@
 @import "tailwindcss";
-
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 /* 
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-} */
+---break--- */
+@custom-variant dark (&:is(.dark *));
+
+
 body {
     background-color: #262634;
     width: 100%;
     height: 100%;
-    
+
 }
+
+
