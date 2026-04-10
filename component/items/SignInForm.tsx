@@ -6,7 +6,10 @@ import Input from "@/component/items/Input";
 import { User, Mail, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "@/services/auth.service";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 const SignInForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -18,9 +21,10 @@ const SignInForm = () => {
   const onSubmit = async (data: SignInData) => {
     try {
       await signIn(data.email, data.password);
-      alert("login successfully!");
+      toast.success("Sign In Successfully");
+      router.push("/");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Sign In Failed");
     }
   };
   return (
@@ -47,7 +51,7 @@ const SignInForm = () => {
         />
 
         <div className="flex items-center justify-center">
-          <button className="bg-blue-700 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
+          <button className="bg-blue-800 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
             Sign In
           </button>
         </div>

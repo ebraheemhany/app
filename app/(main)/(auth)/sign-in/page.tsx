@@ -2,18 +2,15 @@ import SignInForm from "@/component/items/SignInForm";
 import Image from "next/image";
 import React from "react";
 import { supabase } from "@/lib/supabase";
+
 const SignIn = async () => {
-  const { data, error } = await supabase.from("users").select("*");
-
-  console.log(data, error);
-
   return (
     <div className="h-full flex justify-center items-center ">
-      <div className="flex w-[70%] mx-auto  bg-black/40 rounded-2xl">
+      <div className="flex w-[90%] md:w-[80%] lg:w-[70%] mx-auto  bg-black/40 rounded-2xl">
         {/* image and text */}
 
-        <div className="flex-1 bg-[#292C35] w-[40%]">
-          <div className="relative w-[500px] h-[300px]">
+        <div className="flex-1 hidden md:block bg-[#292C35] w-[40%]">
+          <div className="relative w-full h-[300px]">
             <Image src="/icon/outh_2.svg" alt="image" fill />
           </div>
 
@@ -31,9 +28,9 @@ const SignIn = async () => {
 
         {/* form */}
         <div className="flex-1 flex flex-col w-[60%]">
-          <h2 className="text-[30px] text-blue-700 font-serif font-bold text-center mt-4 ">
-            Yala Book
-          </h2>
+          <div className=" relative w-[200px] h-[100px] mx-auto ">
+            <Image src="/icon/logo.svg" alt="logo" fill className="ml-8" />
+          </div>
           <h3 className="text-[25px] text-white font-bold py-2 ml-3 ">
             Create Your Account
           </h3>

@@ -1,0 +1,35 @@
+<svg viewBox="0 0 420 170" xmlns="http://www.w3.org/2000/svg" width="420" height="170">
+  <defs>
+    <linearGradient id="yalaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00AEEF"/>
+      <stop offset="100%" style="stop-color:#0057B8"/>
+    </linearGradient>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0057B8"/>
+      <stop offset="100%" style="stop-color:#00AEEF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- "yala" text -->
+  <text
+    x="10"
+    y="110"
+    font-family="'Georgia', 'Times New Roman', serif"
+    font-size="100"
+    font-weight="bold"
+    font-style="italic"
+    fill="url(#yalaGrad)"
+    letter-spacing="-2"
+  >yala</text>
+
+  <!-- "BOOK" text -->
+  <text
+    x="14"
+    y="155"
+    font-family="'Arial Black', 'Impact', sans-serif"
+    font-size="46"
+    font-weight="900"
+    fill="url(#bookGrad)"
+    letter-spacing="18"
+  >BOOK</text>
+</svg>

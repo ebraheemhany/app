@@ -7,6 +7,7 @@ import Input from "@/component/items/Input";
 import { User, Mail, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { signUp } from "@/services/auth.service";
+import { toast } from "sonner";
 const SignUpForm = () => {
   const {
     register,
@@ -19,10 +20,9 @@ const SignUpForm = () => {
   const onSubmit = async (data: SignUpData) => {
     try {
       await signUp(data.email, data.password, data.username);
-      alert("Account created successfully!");
-      // ممكن تعمل redirect بعد كده
+      toast.success("Sign Up Successfully");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Sign Up Failed");
     }
   };
 
@@ -70,7 +70,7 @@ const SignUpForm = () => {
           />
 
           <div className="flex items-center justify-center">
-            <button className="bg-blue-700 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
+            <button className="bg-blue-800 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
               Create Account
             </button>
           </div>
