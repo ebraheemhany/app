@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   House,
   Search,
@@ -13,12 +16,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 const LeftSection = () => {
+  const pathname = usePathname();
+  const isActive = (path) => pathname === path;
   return (
     <div className=" w-full h-full  bg-[#161618] border-r border-gray-600">
       <div>
-        <div className="relative w-[150px] h-[70px] ml-3 ">
-          <Image src="/icon/logo.svg" alt="logo" fill />
-        </div>
+        <Link href="/">
+          <div className="relative w-[150px] h-[70px] ml-3 ">
+            <Image src="/icon/logo.svg" alt="logo" fill />
+          </div>
+        </Link>
 
         <div className="w-full h-[1px] bg-gray-600 mt-2"></div>
 
@@ -41,38 +48,57 @@ const LeftSection = () => {
           <p className="text-[13px] text-gray-700">MAIN</p>
 
           <ul className="text-gray-500">
-            <li className="flex items-center gap-2 py-2 cursor-pointer">
+            <li
+              className={`flex items-center gap-2 py-2 px-2 rounded-lg cursor-pointer transition
+  ${isActive("/") ? "bg-gray-700 text-white" : "text-gray-500 hover:bg-gray-700 hover:text-white"}`}
+            >
               <House className="w-5 h-5" />
               <Link href="/">
                 <p>Home</p>
               </Link>
             </li>
-            <li className="flex items-center gap-2 py-2 cursor-pointer">
+            <li
+              className={`flex items-center gap-2 py-2 px-2 rounded-lg cursor-pointer transition
+  ${isActive("/explore") ? "bg-gray-700 text-white" : "text-gray-500 hover:bg-gray-700 hover:text-white"}`}
+            >
               <Search className="w-5 h-5" />
-              <p>Explore</p>
+              <Link href="/explore">
+                <p>Explore</p>
+              </Link>
             </li>
-            <li className="flex items-center justify-between py-2 cursor-pointer mr-3">
-              <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                <p>Notifications</p>
-              </div>
-              <div>
-                <span className="bg-blue-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </div>
-            </li>
-            <li className="flex items-center justify-between py-2 cursor-pointer mr-3">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
-                <p>Messages</p>
-              </div>
-              <div>
-                <span className="bg-blue-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </div>
-            </li>
+
+            <Link href="/Notifications">
+              <li
+                className={`flex justify-between items-center gap-2 py-2 px-2 rounded-lg cursor-pointer transition
+  ${isActive("/Notifications") ? "bg-gray-700 text-white" : "text-gray-500 hover:bg-gray-700 hover:text-white"}`}
+              >
+                <div className="flex items-center gap-2">
+                  <Bell className="w-5 h-5" />
+                  <p>Notifications</p>
+                </div>
+                <div>
+                  <span className="bg-blue-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    3
+                  </span>
+                </div>
+              </li>
+            </Link>
+            <Link href="/Messages">
+              <li
+                className={`flex justify-between items-center gap-2 py-2 px-2 rounded-lg cursor-pointer transition
+  ${isActive("/Messages") ? "bg-gray-700 text-white" : "text-gray-500 hover:bg-gray-700 hover:text-white"}`}
+              >
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  <p>Messages</p>
+                </div>
+                <div>
+                  <span className="bg-blue-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    3
+                  </span>
+                </div>
+              </li>
+            </Link>
             <li className="flex items-center gap-2 py-2 cursor-pointer">
               <Bookmark className="w-5 h-5" />
               <p>Saved</p>
@@ -85,10 +111,15 @@ const LeftSection = () => {
           <p className="text-[13px] text-gray-700">DISCOVER</p>
 
           <ul className="text-gray-500">
-            <li className="flex items-center gap-2 py-2 cursor-pointer">
-              <Users className="w-5 h-5" />
-              <p>Friends</p>
-            </li>
+            <Link href="/frinds">
+              <li
+                className={`flex items-center gap-2 py-2 px-2 rounded-lg cursor-pointer transition
+  ${isActive("/frinds") ? "bg-gray-700 text-white" : "text-gray-500 hover:bg-gray-700 hover:text-white"}`}
+              >
+                <Users className="w-5 h-5" />
+                <p>Friends</p>
+              </li>
+            </Link>
             <li className="flex items-center gap-2 py-2 cursor-pointer">
               <Star className="w-5 h-5" />
               <p>CreaTor Studop</p>

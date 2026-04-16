@@ -8,7 +8,10 @@ import { User, Mail, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { signUp } from "@/services/auth.service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 const SignUpForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -19,8 +22,13 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: SignUpData) => {
     try {
-      await signUp(data.email, data.password, data.username);
+      const response = await signUp(data.email, data.password, data.username);
+      // حفظ ال token في cookies
+      if (response.user?.id) {
+        document.cookie = `auth_token=${response.user.id}; path=/; max-age=604800`;
+      }
       toast.success("Sign Up Successfully");
+      router.push("/");
     } catch (err: any) {
       toast.error(err.message || "Sign Up Failed");
     }

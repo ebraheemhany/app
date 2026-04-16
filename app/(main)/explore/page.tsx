@@ -1,0 +1,118 @@
+"use client";
+
+import { useState } from "react";
+import { Search } from "lucide-react";
+import LeftSection from "@/component/leftSection/leftSection";
+import RighteSection from "@/component/righteSection/righteSection";
+import ShowSomeUsers from "@/component/items/ShowSomeUsers";
+import TreendingPosts from "@/component/items/TreendingPosts";
+import { useSearch } from "@/component/items/SearchHook";
+import SearchResults from "@/component/items/SearchResults"; // ✅ أضفنا الاستيراد
+
+const categories = [
+  "كل شيء",
+  "تريند",
+  "تقنية",
+  "رياضة",
+  "فن وإبداع",
+  "موسيقى",
+  "سفر",
+  "طعام",
+  "أخبار",
+];
+
+export default function ExplorePage() {
+  const [activeCat, setActiveCat] = useState("كل شيء"); // ✅ مرة واحدة بس
+  const { query, results, loading, search } = useSearch();
+
+  return (
+    <div className="w-full flex justify-center">
+      <div className="w-[100%] md:w-[95%] lg:w-[90%] relative bg-black text-white">
+        <div className="flex gap-4">
+          {/* left section */}
+          <div className="hidden md:block md:w-[30%] lg:w-[20%]">
+            <div className="fixed top-0 h-screen md:w-[25%] lg:w-[16%]">
+              <LeftSection />
+            </div>
+          </div>
+
+          {/* main section */}
+          <div className="w-[100%] md:w-[70%] lg:w-[60%] mt-22 md:mt-10">
+            {/* 🔍 Search */}
+            <div className="flex items-center gap-3 bg-[#1E1E22] border border-gray-700 rounded-xl px-4 py-2 mb-5">
+              <Search className="w-4 h-4 text-gray-400" />
+              <input
+                placeholder="Search for posts, hashtags, and people..."
+                className="bg-transparent outline-none text-sm text-white w-full"
+                value={query}
+                onChange={(e) => search(e.target.value)}
+              />
+              <button className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs">
+                Search
+              </button>
+            </div>{" "}
+            {/* ✅ الـ div بتاع search اتقفل هنا صح */}
+            {/* 🔎 Search Results */}
+            <SearchResults
+              users={results.profiles}
+              posts={results.posts}
+              loading={loading}
+              query={query}
+            />
+            {/* باقي المحتوى بيتخفى لما يكون فيه بحث */}
+            {!query.trim() && (
+              <>
+                {/* 🏷 Categories */}
+                <div className="flex gap-2 overflow-x-auto mb-6">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCat(cat)}
+                      className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap border transition
+                        ${
+                          activeCat === cat
+                            ? "bg-purple-600 text-white border-purple-600"
+                            : "bg-[#1E1E22] text-gray-400 border-gray-600 hover:bg-gray-700"
+                        }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 🔥 Trending */}
+                <p className="text-xs text-gray-500 mb-3">ترند الآن</p>
+                <div className="mb-6">
+                  {["#WorldCup2026", "#الذكاء_الاصطناعي", "#رمضان_كريم"].map(
+                    (trend, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between py-2 border-b border-gray-700"
+                      >
+                        <span className="text-gray-400 text-sm">{i + 1}</span>
+                        <p className="flex-1 mx-3 text-white text-sm">
+                          {trend}
+                        </p>
+                        <span className="text-gray-500 text-xs">↗</span>
+                      </div>
+                    ),
+                  )}
+                </div>
+
+                <ShowSomeUsers />
+                <TreendingPosts />
+              </>
+            )}
+          </div>
+
+          {/* right section */}
+          <div className="w-[20%] hidden lg:block">
+            <div className="fixed top-0 w-[16%]">
+              <RighteSection />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

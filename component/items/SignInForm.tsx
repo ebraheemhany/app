@@ -20,7 +20,11 @@ const SignInForm = () => {
 
   const onSubmit = async (data: SignInData) => {
     try {
-      await signIn(data.email, data.password);
+      const response = await signIn(data.email, data.password);
+      // حفظ ال token في cookies
+      if (response.session?.access_token) {
+        document.cookie = `auth_token=${response.session.access_token}; path=/; max-age=604800`;
+      }
       toast.success("Sign In Successfully");
       router.push("/");
     } catch (err: any) {

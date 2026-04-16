@@ -10,6 +10,7 @@ import {
   ImageIcon,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const reactions = ["❤️", "😮", "😂"];
 
@@ -22,27 +23,31 @@ export default function PostCard({ post }) {
       {/* ── Header ── */}
       <div className="flex items-start justify-between px-4 pt-4 pb-3">
         <div className="flex items-center gap-3">
-          {post.profiles?.avatar_url ? (
-            <Image
-              src={post.profiles.avatar_url}
-              alt="avatar"
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-sm font-bold">
-                {post.profiles?.username?.charAt(0).toUpperCase() || "?"}
-              </span>
-            </div>
-          )} 
+          <Link href={`/OuherProfile/${post.user_id}`}>
+            {post.profiles?.avatar_url ? (
+              <Image
+                src={post.profiles.avatar_url}
+                alt="avatar"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center flex-shrink-0 cursor-pointer">
+                <span className="text-white text-sm font-bold">
+                  {post.profiles?.username?.charAt(0).toUpperCase() || "?"}
+                </span>
+              </div>
+            )}
+          </Link>
           {/* Name */}
           <div>
             <div className="flex items-center gap-1">
-              <span className="text-white text-sm font-semibold">
-                {post.profiles?.username || "Unknown"}
-              </span>
+              <Link href={`/OuherProfile/${post.user_id}`}>
+                <span className="text-white text-sm font-semibold cursor-pointer hover:underline">
+                  {post.profiles?.username || "Unknown"}
+                </span>
+              </Link>
               <BadgeCheck size={15} className="text-blue-400 fill-blue-400" />
             </div>
             <span className="text-gray-500 text-xs">
