@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import LeftSection from "@/component/leftSection/leftSection";
 import RighteSection from "@/component/righteSection/righteSection";
@@ -9,6 +9,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useFollow } from "@/Query/useFollow";
 import { useToggleFollow } from "@/Query/useToggleFollow";
+import { startConversation } from "@/Query/useConversations";
 
 type Profile = {
   id: string;
@@ -21,9 +22,12 @@ type Profile = {
 
 export default function UserProfilePage() {
   const { id } = useParams();
+  const router = useRouter();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isLoadingMessage, setIsLoadingMessage] = useState(false);
 
   // التحقق من أن id موجود وهو string
   if (!id || typeof id !== "string") {
@@ -33,6 +37,15 @@ export default function UserProfilePage() {
   // ✅ React Query
   const { data: followData, isLoading: followLoading } = useFollow(id);
   const toggleFollowMutation = useToggleFollow();
+
+  // =====================
+  // Get Current User
+  // =====================
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data.session?.user.id ?? null);
+    });
+  }, []);
 
   // =====================
   // Fetch profile
@@ -83,6 +96,26 @@ export default function UserProfilePage() {
       userId: followData.userId,
       isFollowing: followData.isFollowing,
     });
+  };
+
+  // =====================
+  // Send Message
+  // =====================
+  const handleSendMessage = async () => {
+    if (!currentUserId || !id) {
+      toast.error("Please log in first");
+      return;
+    }
+
+    try {
+      setIsLoadingMessage(true);
+      const conversationId = await startConversation(currentUserId, id);
+      router.push(`/Messages?conv=${conversationId}`);
+    } catch (error) {
+      toast.error("Failed to start conversation");
+    } finally {
+      setIsLoadingMessage(false);
+    }
   };
 
   return (
@@ -141,21 +174,31 @@ export default function UserProfilePage() {
               </div>
 
               {/* Follow Button */}
-              <button
-                onClick={handleFollowToggle}
-                disabled={toggleFollowMutation.isPending || followLoading}
-                className={`mt-5 w-25 h-8 px-4 text-center border cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors ${
-                  followData?.isFollowing
-                    ? "bg-blue-700 text-white"
-                    : "border-blue-700 text-white hover:bg-blue-700"
-                }`}
-              >
-                {toggleFollowMutation.isPending
-                  ? "..."
-                  : followData?.isFollowing
-                    ? "Following"
-                    : "Follow"}
-              </button>
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={handleFollowToggle}
+                  disabled={toggleFollowMutation.isPending || followLoading}
+                  className={`w-25 h-8 px-4 text-center border cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors ${
+                    followData?.isFollowing
+                      ? "bg-blue-700 text-white"
+                      : "border-blue-700 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  {toggleFollowMutation.isPending
+                    ? "..."
+                    : followData?.isFollowing
+                      ? "Following"
+                      : "Follow"}
+                </button>
+
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isLoadingMessage}
+                  className="w-32 h-8 px-4 text-center border border-blue-700 text-white hover:bg-blue-700 cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors"
+                >
+                  {isLoadingMessage ? "..." : "Send Message"}
+                </button>
+              </div>
             </div>
 
             {/* Tabs */}

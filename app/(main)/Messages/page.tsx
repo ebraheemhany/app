@@ -1,6 +1,7 @@
 // app/messages/page.tsx
 "use client";
 
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -10,8 +11,8 @@ import RighteSection from "@/component/righteSection/righteSection";
 import { useConversations, useChat } from "@/Query/useConversations";
 import { format } from "date-fns";
 import { supabase } from "@/lib/supabase";
-export default function MessagesPage() {
-  const searchParams = useSearchParams();
+
+function MessagesContent({ searchParams }: { searchParams: any }) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeConvId, setActiveConvId] = useState<string | null>(
     searchParams.get("conv") ?? null,
@@ -224,5 +225,24 @@ export default function MessagesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SearchParamsWrapper({
+  children,
+}: {
+  children: (sp: any) => React.ReactNode;
+}) {
+  const searchParams = useSearchParams();
+  return <>{children(searchParams)}</>;
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchParamsWrapper>
+        {(searchParams) => <MessagesContent searchParams={searchParams} />}
+      </SearchParamsWrapper>
+    </Suspense>
   );
 }

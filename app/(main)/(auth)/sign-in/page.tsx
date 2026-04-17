@@ -1,7 +1,5 @@
 import SignInForm from "@/component/items/SignInForm";
 import Image from "next/image";
-import React from "react";
-import { supabase } from "@/lib/supabase";
 
 const SignIn = async () => {
   return (
@@ -32,10 +30,10 @@ const SignIn = async () => {
             <Image src="/icon/logo.svg" alt="logo" fill className="ml-8" />
           </div>
           <h3 className="text-[25px] text-white font-bold py-2 ml-3 ">
-            Create Your Account
+            Sign In to Your Account
           </h3>
           <p className="text-white text-[18px] font-bold pb-5 ml-3">
-            Join Us Today!
+            Welcome Back!
           </p>
 
           <SignInForm />

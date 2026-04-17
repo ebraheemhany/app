@@ -23,12 +23,10 @@ type Comment = {
   content: string;
   created_at: string;
   user_id: string;
-  profiles:
-    | {
-        username: string;
-        avatar_url: string | null;
-      }[]
-    | null;
+  profiles: {
+    username: string;
+    avatar_url: string | null;
+  } | null;
 };
 
 const CommentCompo = ({ postId, currentUser }: PropsValue) => {
@@ -103,10 +101,10 @@ const CommentCompo = ({ postId, currentUser }: PropsValue) => {
               <div key={c.id} className="flex items-start gap-3">
                 {/* avatar */}
                 <div className="w-8 h-8 rounded-full bg-green-300">
-                  {c.profiles?.[0]?.avatar_url ? (
+                  {c.profiles?.avatar_url ? (
                     <div className="relative w-full h-full rounded-full overflow-hidden">
                       <Image
-                        src={c.profiles[0].avatar_url}
+                        src={c.profiles.avatar_url}
                         alt="avatar"
                         fill
                         className="object-cover"
@@ -114,8 +112,7 @@ const CommentCompo = ({ postId, currentUser }: PropsValue) => {
                     </div>
                   ) : (
                     <span className="text-xs text-gray-500">
-                      {c.profiles?.[0]?.username?.charAt(0).toUpperCase() ||
-                        "?"}
+                      {c.profiles?.username?.charAt(0).toUpperCase() || "?"}
                     </span>
                   )}
                 </div>
@@ -123,7 +120,7 @@ const CommentCompo = ({ postId, currentUser }: PropsValue) => {
                 {/* comment */}
                 <div className="bg-gray-700 rounded-xl px-3 py-2 flex-1">
                   <strong className="text-xs text-gray-100 block">
-                    {c.profiles?.[0]?.username}
+                    {c.profiles?.username}
                   </strong>
                   <p className="text-[13px] text-gray-300">{c.content}</p>
                 </div>

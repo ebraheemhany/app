@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, SignInData } from "@/Schema/Schema";
 import Input from "@/component/items/Input";
-import { User, Mail, ShieldAlert } from "lucide-react";
+import { Mail, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "@/services/auth.service";
 import { toast } from "sonner";
@@ -27,8 +27,9 @@ const SignInForm = () => {
       }
       toast.success("Sign In Successfully");
       router.push("/");
-    } catch (err: any) {
-      toast.error(err.message || "Sign In Failed");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Sign In Failed");
     }
   };
   return (
@@ -55,12 +56,12 @@ const SignInForm = () => {
         />
 
         <div className="flex items-center justify-center">
-          <button className="bg-blue-800 text-white py-2 mx-3 rounded w-[100%] cursor-pointer  ">
+          <button className="bg-blue-800 text-white py-2 mx-3 rounded w-full cursor-pointer  ">
             Sign In
           </button>
         </div>
         <p className="text-white text-[16px] mb-3 ml-3 ">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href={"/sign-up"} className="text-blue-700 cursor-pointer ">
             [Sign Up]
           </Link>
