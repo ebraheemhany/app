@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import Image from "next/image";
-
+import { useGetCurrentUser } from "@/Query/useGetUserByid";
+import { useGetPost } from "@/Query/usePostByID";
 type Profile = {
   id: string;
   username: string;
@@ -19,35 +20,28 @@ type Profile = {
   created_at: string;
 };
 
+// ✅ Post type بدل any
+type Post = {
+  id: string;
+  user_id: string;
+  content: string | null;
+  image_url: string | null;
+  video_url: string | null;
+  created_at: string;
+};
+
 export default function ProfilePage() {
   const [showEdit, setShowEdit] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [posts, setPosts] = useState<any[]>([]);
-  // ✅ طلعنا fetchProfile برّه useEffect
-  const fetchProfile = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+  const [posts, setPosts] = useState<Post[]>([]);
 
-    if (error) toast.error("Failed to fetch profile data");
-    else setProfile(data);
-  };
+  const { data: currentUser, refetch } = useGetCurrentUser();
+  const profile = currentUser?.profile || null;
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  // get posts of the user
+  // get posts by usser id
   useEffect(() => {
     const fetchPosts = async () => {
-      if (!profile) return;
+      if (!profile?.id) return;
 
       const { data, error } = await supabase
         .from("posts")
@@ -59,8 +53,8 @@ export default function ProfilePage() {
       else setPosts(data);
     };
     fetchPosts();
-  }, [profile]);
-  console.log("posts", posts);
+  }, [profile?.id, refetch]);
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-[100%] md:w-[95%] lg:w-[90%] relative bg-black text-white">
@@ -101,11 +95,11 @@ export default function ProfilePage() {
                   <p className="text-gray-400 text-sm">Posts</p>
                 </div>
                 <div>
-                  <p className="font-bold">24.5k</p>
+                  <p className="font-bold">{profile?.followers_count || 0}</p>
                   <p className="text-gray-400 text-sm">Followers</p>
                 </div>
                 <div>
-                  <p className="font-bold">850</p>
+                  <p className="font-bold">{profile?.following_count || 0}</p>
                   <p className="text-gray-400 text-sm">Following</p>
                 </div>
               </div>
@@ -160,7 +154,6 @@ export default function ProfilePage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      // بوست نص بس
                       <div className="w-full h-full flex items-center justify-center p-2">
                         <p className="text-gray-300 text-xs text-center line-clamp-4">
                           {post.content}
@@ -182,7 +175,10 @@ export default function ProfilePage() {
       </div>
 
       {showEdit && (
-        <EditPage state={setShowEdit} onProfileUpdated={fetchProfile} />
+        <EditPage
+          state={setShowEdit}
+          onProfileUpdated={refetch} // ✅ refetch بدل fetchProfile
+        />
       )}
     </div>
   );

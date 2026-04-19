@@ -23,10 +23,13 @@ type Comment = {
   content: string;
   created_at: string;
   user_id: string;
-  profiles: {
-    username: string;
-    avatar_url: string | null;
-  } | null;
+  profiles:
+    | {
+        // اجعلها مصفوفة
+        username: string;
+        avatar_url: string | null;
+      }[]
+    | null;
 };
 
 const CommentCompo = ({ postId, currentUser }: PropsValue) => {
@@ -95,37 +98,46 @@ const CommentCompo = ({ postId, currentUser }: PropsValue) => {
           )}
 
           {/* comments */}
+
           {!isLoading &&
             !error &&
-            safeComments.map((c) => (
-              <div key={c.id} className="flex items-start gap-3">
-                {/* avatar */}
-                <div className="w-8 h-8 rounded-full bg-green-300">
-                  {c.profiles?.avatar_url ? (
-                    <div className="relative w-full h-full rounded-full overflow-hidden">
-                      <Image
-                        src={c.profiles.avatar_url}
-                        alt="avatar"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <span className="text-xs text-gray-500">
-                      {c.profiles?.username?.charAt(0).toUpperCase() || "?"}
-                    </span>
-                  )}
-                </div>
+            safeComments.map((c) => {
+              // هنا نقوم باستخراج البروفايل من المصفوفة (أول عنصر)
+              const userProfile = Array.isArray(c.profiles)
+                ? c.profiles[0]
+                : c.profiles;
 
-                {/* comment */}
-                <div className="bg-gray-700 rounded-xl px-3 py-2 flex-1">
-                  <strong className="text-xs text-gray-100 block">
-                    {c.profiles?.username}
-                  </strong>
-                  <p className="text-[13px] text-gray-300">{c.content}</p>
+              return (
+                <div key={c.id} className="flex items-start gap-3">
+                  {/* avatar */}
+                  <div className="w-8 h-8 rounded-full bg-green-300">
+                    {/* نستخدم الآن المتغير userProfile الذي قمنا بتعريفه */}
+                    {userProfile?.avatar_url ? (
+                      <div className="relative w-full h-full rounded-full overflow-hidden">
+                        <Image
+                          src={userProfile.avatar_url}
+                          alt="avatar"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-500">
+                        {userProfile?.username?.charAt(0).toUpperCase() || "?"}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* comment */}
+                  <div className="bg-gray-700 rounded-xl px-3 py-2 flex-1">
+                    <strong className="text-xs text-gray-100 block">
+                      {userProfile?.username}
+                    </strong>
+                    <p className="text-[13px] text-gray-300">{c.content}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
 
         {/* input */}

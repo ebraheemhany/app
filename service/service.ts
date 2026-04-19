@@ -111,7 +111,6 @@ return data;
 
 // follow or unfollow user
 
-
 export const getFollowData = async (profileId: string) => {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
@@ -165,11 +164,7 @@ export const toggleFollow = async ({
 
 // get and send chat between users
 
-// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-// const supabase = createClientComponentClient();
-
-// إنشاء أو جلب محادثة موجودة
 export async function getOrCreateConversation(
   currentUserId?: string,
   otherUserId?: string
@@ -195,14 +190,120 @@ export async function getOrCreateConversation(
   return created.id;
 }
 
+// get current user
+export const getCurrentUser = async () => {
+  // get user id from supabase auth
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+
+  const user = userData.user;
+
+  // لو مفيش user
+  if (!user) return null;
+
+  // 2) get user data from profiles table by user id
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) throw profileError;
+
+  // 3) رجّع الاتنين مع بعض
+  return {
+    user,
+    profile,
+  };
+};
 
 
 
+// get storis from db
+export const getStories = async () => {
+  const { data, error } = await supabase
+    .from('stories')
+    .select('*')
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: true }) // ✅ ascending عشان الترتيب صح جوا الـ viewer
 
+  if (error) throw error;
 
+  // ✅ group by user_id
+  const grouped = data.reduce((acc, story) => {
+    const key = story.user_id;
+    if (!acc[key]) {
+      acc[key] = {
+        user_id: story.user_id,
+        username: story.username,
+        avatar_url: story.avatar_url,
+        avatar_bg: story.avatar_bg,
+        stories: [],
+      };
+    }
+    acc[key].stories.push(story);
+    return acc;
+  }, {});
 
+  return Object.values(grouped);
+  // ✅ النتيجة:
+  // [
+  //   { user_id, username, avatar_url, avatar_bg, stories: [...] },
+  //   { user_id, username, avatar_url, avatar_bg, stories: [...] },
+  // ]
+};
 
+// ✅ رفع الـ file على Cloudinary
+const uploadToCloudinary = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+formData.append("upload_preset", "social_app"); // من Cloudinary Dashboard
 
+  const res = await fetch(
+      `https://api.cloudinary.com/v1_1/dc4c10a3f/auto/upload`,
+    { method: "POST", body: formData }
+  );
+
+  const data = await res.json();
+  if (!data.secure_url) throw new Error("فشل رفع الملف");
+  return data.secure_url;
+};
+
+export const addNewStorie = async ({ content, file, isImage, avatarBg }: {
+  content?: string;
+  file?: File;
+  isImage?: boolean;
+  avatarBg?: string;
+}) => {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) throw new Error("مش logged in");
+
+  const { user, profile } = currentUser;
+
+  // ✅ لو في file ارفعه الأول
+  let mediaUrl = null;
+  let mediaType = null;
+
+  if (file) {
+    mediaUrl = await uploadToCloudinary(file);
+    mediaType = isImage ? "image" : "video";
+  }
+
+  const { data, error } = await supabase.from("stories").insert({
+    user_id: user.id,
+    username: profile.username,
+    avatar_url: profile.avatar_url,
+    avatar_bg: avatarBg || profile.avatar_bg,
+    media_url: mediaUrl,
+    media_type: mediaType,
+    content: content || null,
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  });
+
+  if (error) throw error;
+  return data;
+};
 
 
 

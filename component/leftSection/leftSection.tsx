@@ -15,9 +15,16 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { useGetCurrentUser } from "@/Query/useGetUserByid";
 const LeftSection = () => {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
+
+  // getUser by id
+  const { data: user } = useGetCurrentUser();
+
+  console.log("user => ", user);
+
   return (
     <div className=" w-full h-full  bg-[#161618] border-r border-gray-600">
       <div>
@@ -144,13 +151,27 @@ const LeftSection = () => {
           <Link href="/ProfilePage">
             <div className="flex items-center justify-between m-3">
               <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center">
-                  Ah
+                <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-[13px] overflow-hidden">
+                  {user?.profile?.avatar_url ? (
+                    <div className="w-full h-full relative">
+                      <Image
+                        src={user.profile.avatar_url}
+                        alt="avatar"
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <p>{user?.profile?.username?.slice(0, 2)}</p>
+                  )}
                 </div>
-
                 <div>
-                  <p className="text-[16px] text-white">Ahmed M.</p>
-                  <p className="text-gray-500 text-[14px]">@ahmedm</p>
+                  <p className="text-[16px] text-white">
+                    {user?.profile?.username || "?"}
+                  </p>
+                  <p className="text-gray-500 text-[14px]">
+                    @{user?.profile?.email?.split("@")[0] || "?"}
+                  </p>
                 </div>
               </div>
 

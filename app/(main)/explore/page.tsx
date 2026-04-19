@@ -8,6 +8,7 @@ import ShowSomeUsers from "@/component/items/ShowSomeUsers";
 import TreendingPosts from "@/component/items/TreendingPosts";
 import { useSearch } from "@/component/items/SearchHook";
 import SearchResults from "@/component/items/SearchResults"; // ✅ أضفنا الاستيراد
+import Search_history from "@/component/items/Search_history";
 
 const categories = [
   "كل شيء",
@@ -23,7 +24,7 @@ const categories = [
 
 export default function ExplorePage() {
   const [activeCat, setActiveCat] = useState("كل شيء"); // ✅ مرة واحدة بس
-  const { query, results, loading, search } = useSearch();
+  const { query, results, loading, search, executeSearch } = useSearch();
 
   return (
     <div className="w-full flex justify-center">
@@ -47,7 +48,10 @@ export default function ExplorePage() {
                 value={query}
                 onChange={(e) => search(e.target.value)}
               />
-              <button className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs">
+              <button
+                onClick={() => executeSearch(query)}
+                className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs"
+              >
                 Search
               </button>
             </div>{" "}
@@ -58,6 +62,7 @@ export default function ExplorePage() {
               posts={results.posts}
               loading={loading}
               query={query}
+              executeSearch={executeSearch}
             />
             {/* باقي المحتوى بيتخفى لما يكون فيه بحث */}
             {!query.trim() && (
@@ -80,24 +85,9 @@ export default function ExplorePage() {
                   ))}
                 </div>
 
-                {/* 🔥 Trending */}
-                <p className="text-xs text-gray-500 mb-3">ترند الآن</p>
-                <div className="mb-6">
-                  {["#WorldCup2026", "#الذكاء_الاصطناعي", "#رمضان_كريم"].map(
-                    (trend, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between py-2 border-b border-gray-700"
-                      >
-                        <span className="text-gray-400 text-sm">{i + 1}</span>
-                        <p className="flex-1 mx-3 text-white text-sm">
-                          {trend}
-                        </p>
-                        <span className="text-gray-500 text-xs">↗</span>
-                      </div>
-                    ),
-                  )}
-                </div>
+                {/* search history */}
+                
+                <Search_history />
 
                 <ShowSomeUsers />
                 <TreendingPosts />

@@ -7,9 +7,16 @@ type Props = {
   posts: any[];
   loading: boolean;
   query: string;
+  executeSearch: (term: string) => void;
 };
 
-const SearchResults = ({ users, posts, loading, query }: Props) => {
+const SearchResults = ({
+  users,
+  posts,
+  loading,
+  query,
+  executeSearch,
+}: Props) => {
   const router = useRouter();
 
   if (!query.trim()) return null;
@@ -44,8 +51,11 @@ const SearchResults = ({ users, posts, loading, query }: Props) => {
           <div className="flex flex-col gap-2">
             {users.map((user) => (
               <div
+                onClick={() => {
+                  executeSearch(user.username); // 1. حفظ في السجل
+                  router.push(`/OuherProfile/${user.id}`); // 2. الانتقال
+                }}
                 key={user.id}
-                onClick={() => router.push(`/OuherProfile/${user.id}`)} // ✅ روح لصفحة اليوزر
                 className="flex items-center gap-3 cursor-pointer hover:bg-[#2a2a2e] p-2 rounded-lg transition"
               >
                 <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
@@ -80,7 +90,11 @@ const SearchResults = ({ users, posts, loading, query }: Props) => {
             {posts.map((post) => (
               <div
                 key={post.id}
-                onClick={() => router.push(`/posts/${post.id}`)} // ✅ روح لصفحة صاحب البوست
+                onClick={() => {
+                  // هنا سنحفظ نص البحث الأصلي الذي استخدمه المستخدم للعثور على هذا البوست
+                  executeSearch(query);
+                  router.push(`/posts/${post.id}`);
+                }}
                 className="border border-gray-700 rounded-lg p-3 cursor-pointer hover:bg-[#2a2a2e] transition"
               >
                 <p className="text-white text-sm">{post.content}</p>

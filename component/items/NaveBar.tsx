@@ -1,4 +1,11 @@
-import { Home, Search, Plus, Bell, User } from "lucide-react";
+import {
+  Home,
+  Search,
+  Plus,
+  Bell,
+  User,
+  MessageSquareMore,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function BottomNav() {
@@ -16,42 +23,50 @@ export default function BottomNav() {
         </Link>
 
         {/* Explore */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group">
-          <Search
-            size={20}
-            className="text-gray-500 group-hover:text-gray-300"
-          />
-          <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
-            Explore
-          </span>
-        </div>
+        <Link href="explore">
+          <div className="flex flex-col items-center gap-1 cursor-pointer group">
+            <Search
+              size={20}
+              className="text-gray-500 group-hover:text-gray-300"
+            />
+            <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
+              Explore
+            </span>
+          </div>
+        </Link>
 
         {/* Create */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group">
+        {/* <div className="flex flex-col items-center gap-1 cursor-pointer group">
           <Plus size={20} className="text-gray-500 group-hover:text-gray-300" />
           <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
             Create
           </span>
-        </div>
+        </div> */}
 
         {/* Alerts */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group relative">
-          <Bell size={20} className="text-gray-500 group-hover:text-gray-300" />
-          {/* Notification Dot */}
-          <span className="absolute top-0 right-1 w-2 h-2 bg-orange-600 rounded-full border border-[#0f1117]"></span>
-          <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
-            Alerts
-          </span>
-        </div>
+        <Link href="/Notifications">
+          <div className="flex flex-col items-center gap-1 cursor-pointer group relative">
+            <Bell
+              size={20}
+              className="text-gray-500 group-hover:text-gray-300"
+            />
+            {/* Notification Dot */}
+            <span className="absolute top-0 right-1 w-2 h-2 bg-orange-600 rounded-full border border-[#0f1117]"></span>
+            <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
+              Alerts
+            </span>
+          </div>
+        </Link>
 
         {/* Profile */}
-        <Link href="/ProfilePage">
+        <Link href="/Messages">
           <div className="flex flex-col items-center gap-1 cursor-pointer group">
-            <div className="ml-1 w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-white  text-xs cursor-pointer shadow-sm">
-              AM
-            </div>
+            <MessageSquareMore
+              size={20}
+              className="text-gray-500 group-hover:text-gray-300"
+            />
             <span className="text-gray-500 text-xs group-hover:text-gray-300">
-              Profile
+              Chat
             </span>
           </div>
         </Link>

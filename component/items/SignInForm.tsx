@@ -8,6 +8,7 @@ import Link from "next/link";
 import { signIn } from "@/services/auth.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 const SignInForm = () => {
   const router = useRouter();
   const {
@@ -20,11 +21,13 @@ const SignInForm = () => {
 
   const onSubmit = async (data: SignInData) => {
     try {
-      const response = await signIn(data.email, data.password);
-      // حفظ ال token في cookies
-      if (response.session?.access_token) {
-        document.cookie = `auth_token=${response.session.access_token}; path=/; max-age=604800`;
-      }
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) throw error;
+
       toast.success("Sign In Successfully");
       router.push("/");
     } catch (err: unknown) {

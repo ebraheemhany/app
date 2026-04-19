@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "Query/usePostByID.ts"  ],
+, "Query/usePostByID.ts", "component/items/AddStoryModal.jsx"  ],
   "exclude": ["node_modules"]
 }
