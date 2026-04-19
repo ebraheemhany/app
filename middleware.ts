@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 
   const user = session?.user;
 
-  const publicRoutes = ["/sign-in"];
+const publicRoutes = ["/sign-in", "/sign-up"];
   const isPublic = publicRoutes.includes(request.nextUrl.pathname);
 
   if (!user && !isPublic) {
@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && isPublic) {
-    return NextResponse.redirect(new URL("/home", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;
