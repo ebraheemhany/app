@@ -31,7 +31,7 @@ const Search_history = () => {
   return (
     <div className="mb-5">
       {history.length > 0 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mx-2">
           <p className="text-xs text-gray-500 mb-3">Search History</p>
           <div onClick={clearHistory}>
             <p className=" text-gray-400 hover:text-white cursor-pointer">
@@ -43,7 +43,7 @@ const Search_history = () => {
       {history.map((item, index) => (
         <div
           key={index}
-          className="flex items-center justify-between py-2 border-b border-gray-700"
+          className="flex items-center justify-between py-2 border-b border-gray-700 mx-2"
         >
           <span className="text-gray-400 text-sm">{index + 1}</span>
           <p className="flex-1 mx-3 text-white text-sm">{item}</p>

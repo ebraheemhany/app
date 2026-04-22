@@ -31,6 +31,32 @@ const ShowSomeUsers = () => {
     speed: 500,
     slidesToScroll: 1,
     slidesToShow: 4,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 2,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   if (isLoading) {
@@ -42,8 +68,8 @@ const ShowSomeUsers = () => {
   }
 
   return (
-    <div>
-      <p className="text-xs text-gray-500 mb-3">أشخاص قد تعرفهم</p>
+    <div className="mx-2">
+      <p className="text-[14px] text-gray-300 mb-3">People may know them</p>
 
       <div className="mb-6">
         <Slider {...settings}>
@@ -60,7 +86,9 @@ const ShowSomeUsers = () => {
                         className="rounded-full"
                       />
                     ) : (
-                      <span>👤</span>
+                      <div className="w-full h-full rounded-full bg-blue-700 flex items-center justify-center">
+                        <p>{user?.username.slice(0, 2)}</p>
+                      </div>
                     )}
                   </div>
                 </Link>
@@ -75,7 +103,7 @@ const ShowSomeUsers = () => {
                       : "bg-purple-600 text-white"
                   }`}
                 >
-                  {following.includes(user.id) ? "تتابعه" : "متابعة"}
+                  {following.includes(user.id) ? "following" : "follow"}
                 </button>
               </div>
             </div>

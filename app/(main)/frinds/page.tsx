@@ -116,8 +116,8 @@ export default function FriendsPage() {
                       <h3 className="font-semibold mt-2">{friend.username}</h3>
 
                       <div className="flex gap-2 mt-3">
-                        <button className="bg-red-600 px-3 py-1 rounded-lg text-sm">
-                          إزالة
+                        <button className="bg-red-600 px-3 py-1 rounded-lg text-sm cursor-pointer">
+                          delete
                         </button>
 
                         <button
@@ -130,11 +130,11 @@ export default function FriendsPage() {
                               friend.id,
                             );
 
-                            router.push(`/messages/${convId}`);
+                            router.push(`/Messages?conv=${convId}`);
                           }}
-                          className="bg-blue-600 px-3 py-1 rounded-lg text-sm"
+                          className="bg-blue-600 px-3 py-1 rounded-lg text-sm cursor-pointer"
                         >
-                          رسالة
+                          chat
                         </button>
                       </div>
                     </div>
@@ -156,7 +156,7 @@ export default function FriendsPage() {
 
           {/* Right */}
           <div className="w-[20%] hidden lg:block">
-            <div className="fixed top-0 w-[16%]">
+            <div className="fixed top-0 w-[20%]">
               <RighteSection />
             </div>
           </div>

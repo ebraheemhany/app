@@ -4,6 +4,8 @@ import { ImageIcon, Video, Smile, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import { toast } from "sonner";
+import ProfilePage from './../../app/(main)/ProfilePage/ProfilePage';
+import { useGetCurrentUser } from "@/Query/useGetUserByid";
 
 const CLOUDINARY_CLOUD_NAME = "dc4c10a3f";
 const CLOUDINARY_UPLOAD_PRESET = "social_app";
@@ -107,14 +109,25 @@ export default function CreatePost({ onPostCreated }) {
     }
   };
 
+// get current user profile
+ const {data: ProfilePageData} =  useGetCurrentUser();
+ const currentUser = ProfilePageData?.profile;
+  
+
   return (
     <div className="w-full bg-[#1E1E22] mt-3 sm:mt-8 sm:rounded-2xl border border-gray-700 px-4 py-3 flex flex-col gap-3">
       <div className="flex items-center gap-3">
         <div className="relative flex-shrink-0">
-          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-blue-700 flex items-center justify-center">
-            <span className="text-white text-[12px] sm:text-[18px] sm:font-bold">
-              AM
-            </span>
+          <div className="relative w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-blue-700 flex items-center justify-center">
+       {
+        currentUser?.avatar_url ? (
+          <Image src={currentUser.avatar_url} alt="Avatar" fill className="" />
+        ) : (
+          <span className="text-white text-[12px] sm:text-[18px] sm:font-bold">
+            {currentUser?.username?.slice(0, 2) || ""}
+          </span>
+        )
+       }
           </div>
           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1e1e2e]" />
         </div>
@@ -123,7 +136,7 @@ export default function CreatePost({ onPostCreated }) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="What's on your mind, Ahmed?"
+          placeholder={`What's on your mind, ${currentUser?.username}?`}
           className="flex-1 bg-[#2a2a3e] text-gray-300 placeholder-gray-500 text-[12px] sm:text-[16px] rounded-full px-2 sm:px-4 py-1.5 sm:py-2.5 outline-none border border-transparent focus:border-violet-500 transition-colors duration-200"
         />
       </div>

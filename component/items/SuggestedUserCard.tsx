@@ -47,7 +47,11 @@ export const SuggestedUserCard = ({ user }: { user: User }) => {
           </div>
 
           <div>
-            <p className="text-[14px] text-white">{user.username}</p>
+            <p className="text-[14px] text-white truncate max-w-[200px]">
+              {user.username.length >= 11
+                ? user.username.slice(0, 11) + "..."
+                : user.username}
+            </p>
             <p className="text-gray-500 text-[10px]">
               @{user.email.split("@")[0]}
             </p>
@@ -59,7 +63,7 @@ export const SuggestedUserCard = ({ user }: { user: User }) => {
       <button
         onClick={handleFollow}
         disabled={toggleFollow.isPending || followLoading}
-        className={`border rounded-2xl text-center w-[80px] py-1 cursor-pointer text-[14px] ${
+        className={`border rounded-2xl text-center w-[50px] py-1 cursor-pointer text-[12px] ${
           followData?.isFollowing
             ? "bg-blue-700 text-white"
             : "border-blue-700 text-blue-700"

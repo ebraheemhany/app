@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import { Notification } from "@/typing/type";
 
 // get post by id
 export const getPostById = async (id: string) => {
@@ -101,7 +102,7 @@ export const addComment = async ({
   return data;
 };
 
-// get user from db
+// get users from db
 export const getUsers = async () => {
 const {data , error} = await supabase.from("profiles").select("*")
 if(error) throw error;
@@ -307,5 +308,33 @@ export const addNewStorie = async ({ content, file, isImage, avatarBg }: {
 
 
 
+// get notificatoins
+
+
+
+const NOTIFICATIONS_PER_PAGE = 20
+
+export const getNotifications = async (
+  userId: string,
+  page: number = 0
+): Promise<Notification[]> => {
+  const from = page * NOTIFICATIONS_PER_PAGE
+  const to = from + NOTIFICATIONS_PER_PAGE - 1
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select(`
+      *,
+      sender:sender_id ( id, username, avatar_url ),
+      post:post_id ( id, content )
+    `)
+    .eq('receiver_id', userId)
+    .order('created_at', { ascending: false })
+    .range(from, to)  // ✅ pagination
+
+  if (error) throw new Error(error.message)
+
+  return data ?? []  // ✅ مش هترجع null أبداً
+}
 
 

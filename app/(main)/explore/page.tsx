@@ -68,12 +68,12 @@ export default function ExplorePage() {
             {!query.trim() && (
               <>
                 {/* 🏷 Categories */}
-                <div className="flex gap-2 overflow-x-auto mb-6">
+                <div className="flex gap-2 overflow-x-auto mb-6 custom-scroll">
                   {categories.map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setActiveCat(cat)}
-                      className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap border transition
+                      className={`px-4 py-1.5 rounded-full text-sm whitespace-nowrap border transition mb-2.5
                         ${
                           activeCat === cat
                             ? "bg-purple-600 text-white border-purple-600"
@@ -86,7 +86,7 @@ export default function ExplorePage() {
                 </div>
 
                 {/* search history */}
-                
+
                 <Search_history />
 
                 <ShowSomeUsers />
@@ -97,7 +97,7 @@ export default function ExplorePage() {
 
           {/* right section */}
           <div className="w-[20%] hidden lg:block">
-            <div className="fixed top-0 w-[16%]">
+            <div className="fixed top-0 w-[20%]">
               <RighteSection />
             </div>
           </div>

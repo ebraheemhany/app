@@ -178,14 +178,14 @@ export default function UserProfilePage() {
                 <button
                   onClick={handleFollowToggle}
                   disabled={toggleFollowMutation.isPending || followLoading}
-                  className={`w-25 h-8 px-4 text-center border cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors ${
+                  className={` px-4 text-center border cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors ${
                     followData?.isFollowing
                       ? "bg-blue-700 text-white"
                       : "border-blue-700 text-white hover:bg-blue-700"
                   }`}
                 >
                   {toggleFollowMutation.isPending
-                    ? "..."
+                    ? "Follo.."
                     : followData?.isFollowing
                       ? "Following"
                       : "Follow"}
@@ -194,9 +194,9 @@ export default function UserProfilePage() {
                 <button
                   onClick={handleSendMessage}
                   disabled={isLoadingMessage}
-                  className="w-32 h-8 px-4 text-center border border-blue-700 text-white hover:bg-blue-700 cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors"
+                  className=" px-4 text-center border border-blue-700 text-white hover:bg-blue-700 cursor-pointer pt-1 text-[15px] rounded-2xl transition-colors"
                 >
-                  {isLoadingMessage ? "..." : "Send Message"}
+                  {isLoadingMessage ? "Cha.." : "Chating"}
                 </button>
               </div>
             </div>
@@ -249,7 +249,7 @@ export default function UserProfilePage() {
 
           {/* Right Section */}
           <div className="w-[20%] hidden lg:block">
-            <div className="fixed top-0 w-[16%]">
+            <div className="fixed top-0 w-[20%]">
               <RighteSection />
             </div>
           </div>

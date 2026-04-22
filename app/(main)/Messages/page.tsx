@@ -1,10 +1,10 @@
-// app/messages/page.tsx
 "use client";
 
 import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import LeftSection from "@/component/leftSection/leftSection";
 import RighteSection from "@/component/righteSection/righteSection";
@@ -19,8 +19,10 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
   );
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
+  const [mobileShowChat, setMobileShowChat] = useState<boolean>(
+    !!searchParams.get("conv"),
+  );
 
-  // جلب الـ session
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setCurrentUserId(data.session?.user.id ?? null);
@@ -45,6 +47,16 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
     setInput("");
   };
 
+  const handleSelectConv = (convId: string) => {
+    setActiveConvId(convId);
+    setMobileShowChat(true);
+  };
+
+  const handleBack = () => {
+    setMobileShowChat(false);
+    setActiveConvId(null);
+  };
+
   const filteredConvs = conversations.filter((c) =>
     c.otherUser?.username.toLowerCase().includes(search.toLowerCase()),
   );
@@ -52,21 +64,28 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
   if (!currentUserId) return null;
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center ">
       <div className="w-full md:w-[95%] lg:w-[90%] relative bg-black text-white">
         <div className="flex gap-4">
-          {/* Left Sidebar */}
           <div className="hidden md:block md:w-[30%] lg:w-[20%]">
             <div className="fixed top-0 h-screen md:w-[25%] lg:w-[16%]">
               <LeftSection />
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="w-full md:w-[70%] lg:w-[60%] mt-22 md:mt-10">
-            <div className="mx-3 md:mx-0 bg-[#0f0f10] border border-gray-800 rounded-3xl p-5 shadow-sm h-[calc(100vh-120px)] flex">
-              {/* LEFT - Inbox */}
-              <div className="w-[35%] border-r border-gray-800 p-4 flex flex-col">
+          <div className="w-full md:w-[70%] lg:w-[60%] mt-0 md:mt-10">
+            <div
+              className="bg-[#0f0f10] md:mx-0 md:border md:border-gray-800 md:rounded-3xl md:p-5 
+            md:shadow-sm mt-20 sm:mt-0  h-[80vh] md:h-[calc(100vh-120px)] flex"
+            >
+              {/* INBOX */}
+              <div
+                className={`
+                  flex-col p-4
+                  w-full md:w-[35%] md:border-r md:border-gray-800
+                  ${mobileShowChat ? "hidden md:flex" : "flex"}
+                `}
+              >
                 <h2 className="text-xl font-bold mb-4">Messages</h2>
 
                 <input
@@ -76,7 +95,7 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                   className="bg-[#1a1a1b] p-2 rounded-lg mb-4 outline-none text-sm"
                 />
 
-                <div className="flex flex-col gap-2 overflow-y-auto">
+                <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto custom-scroll">
                   {convLoading && (
                     <p className="text-gray-500 text-sm text-center mt-4">
                       Loading...
@@ -92,8 +111,8 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                   {filteredConvs.map((conv) => (
                     <div
                       key={conv.id}
-                      onClick={() => setActiveConvId(conv.id)}
-                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-[#1c1c1f] transition ${
+                      onClick={() => handleSelectConv(conv.id)}
+                      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-[#1c1c1f] transition ${
                         activeConvId === conv.id ? "bg-[#1c1c1f]" : ""
                       }`}
                     >
@@ -106,7 +125,6 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                         height={45}
                         className="rounded-full object-cover"
                       />
-
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">
                           {conv.otherUser?.username || "User"}
@@ -115,7 +133,6 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                           {conv.last_message || "No messages yet"}
                         </p>
                       </div>
-
                       {(conv.unreadCount ?? 0) > 0 && (
                         <span className="bg-blue-600 text-xs px-2 py-0.5 rounded-full shrink-0">
                           {conv.unreadCount}
@@ -126,18 +143,29 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                 </div>
               </div>
 
-              {/* RIGHT - Chat */}
-              <div className="flex-1 flex flex-col">
+              {/* CHAT */}
+              <div
+                className={`
+                  flex-col flex-1
+                  ${mobileShowChat ? "flex" : "hidden md:flex"}
+                `}
+              >
                 {!activeConvId ? (
-                  // Empty State
                   <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
                     <span className="text-5xl mb-3">💬</span>
-                    <p className="text-sm">اختر محادثة للبدء</p>
+                    <p className="text-sm">
+                      Select a conversation to start messaging
+                    </p>
                   </div>
                 ) : (
                   <>
-                    {/* Header */}
-                    <div className="flex items-center gap-3 p-4 border-b border-gray-800">
+                    <div className="flex items-center gap-3 p-4 border-b border-gray-400 bg-[#1a1a1b]">
+                      <button
+                        onClick={handleBack}
+                        className="md:hidden p-1 rounded-full hover:bg-[#1c1c1f] transition"
+                      >
+                        <ArrowLeft size={20} />
+                      </button>
                       <Image
                         src={
                           activeConv?.otherUser?.avatar_url ||
@@ -153,14 +181,12 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                       </h3>
                     </div>
 
-                    {/* Messages */}
-                    <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-2">
+                    <div className="flex-1 min-h-0 p-4 overflow-y-auto flex flex-col gap-2 custom-scroll">
                       {msgLoading && (
                         <p className="text-gray-500 text-sm text-center">
                           Loading...
                         </p>
                       )}
-
                       {messages.map((msg) => {
                         const isOwn = msg.sender_id === currentUserId;
                         return (
@@ -169,7 +195,7 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                             className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}
                           >
                             <div
-                              className={`max-w-[60%] px-4 py-2 rounded-2xl text-sm ${
+                              className={`max-w-[75%] md:max-w-[60%] px-4 py-2 rounded-2xl text-sm ${
                                 isOwn
                                   ? "bg-blue-600 text-white rounded-br-sm"
                                   : "bg-[#1a1a1b] text-white rounded-bl-sm"
@@ -193,7 +219,6 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
                       <div ref={bottomRef} />
                     </div>
 
-                    {/* Input */}
                     <div className="p-4 border-t border-gray-800 flex gap-2">
                       <input
                         value={input}
@@ -216,9 +241,8 @@ function MessagesContent({ searchParams }: { searchParams: any }) {
             </div>
           </div>
 
-          {/* Right Sidebar */}
           <div className="w-[20%] hidden lg:block">
-            <div className="fixed top-0 w-[16%]">
+            <div className="fixed top-0 w-[20%]">
               <RighteSection />
             </div>
           </div>

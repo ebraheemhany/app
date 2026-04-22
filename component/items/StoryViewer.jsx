@@ -7,45 +7,55 @@ export default function StoryViewer({ stories, startIndex = 0, onClose }) {
   const [progress, setProgress] = useState(0);
   const animRef = useRef(null);
   const lastTimeRef = useRef(null);
+  const progressRef = useRef(0); // ✅ ref للحساب بدل state
+  const isDoneRef = useRef(false);
   const DURATION = 5000;
 
   const currentStory = stories[currentIdx];
 
-  // ✅ useCallback عشان مش بيتعمل re-create كل render
   const nextStory = useCallback(() => {
-    setCurrentIdx((prev) => {
-      if (prev < stories.length - 1) return prev + 1;
-      // ✅ setTimeout عشان مش بنعمل setState في الـ render cycle
+    if (isDoneRef.current) return;
+    isDoneRef.current = true;
+    cancelAnimationFrame(animRef.current);
+
+    if (currentIdx < stories.length - 1) {
+      setCurrentIdx((prev) => prev + 1);
+    } else {
       setTimeout(() => onClose(), 0);
-      return prev;
-    });
-    setProgress(0);
-  }, [stories.length, onClose]);
+    }
+  }, [currentIdx, stories.length, onClose]);
 
   const prevStory = useCallback(() => {
+    if (isDoneRef.current) return;
+    isDoneRef.current = true;
+    cancelAnimationFrame(animRef.current);
     setCurrentIdx((prev) => (prev > 0 ? prev - 1 : prev));
-    setProgress(0);
   }, []);
 
   useEffect(() => {
-    setProgress(0);
+    // ✅ reset كل الـ refs عند كل story جديدة
+    isDoneRef.current = false;
+    progressRef.current = 0;
     lastTimeRef.current = null;
+    setProgress(0);
 
     const tick = (ts) => {
+      if (isDoneRef.current) return;
+
       if (!lastTimeRef.current) lastTimeRef.current = ts;
       const delta = ts - lastTimeRef.current;
       lastTimeRef.current = ts;
 
-      setProgress((prev) => {
-        const next = prev + (delta / DURATION) * 100;
-        if (next >= 100) {
-          // ✅ setTimeout عشان مش بنعمل setState في الـ render cycle
-          setTimeout(() => nextStory(), 0);
-          return 100;
-        }
-        return next;
-      });
+      // ✅ بنحسب من الـ ref مش من الـ state
+      progressRef.current += (delta / DURATION) * 100;
 
+      if (progressRef.current >= 100) {
+        setProgress(100);
+        nextStory();
+        return;
+      }
+
+      setProgress(progressRef.current); // ✅ بنحدث الـ UI من الـ ref
       animRef.current = requestAnimationFrame(tick);
     };
 
@@ -95,7 +105,7 @@ export default function StoryViewer({ stories, startIndex = 0, onClose }) {
         </div>
 
         {/* Header */}
-        {/* <div className="absolute top-7 left-3 right-3 flex items-center gap-2 z-10">
+        <div className="absolute top-7 left-3 right-3 flex items-center gap-2 z-20">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 relative flex-shrink-0">
             {currentStory.avatar_url ? (
               <Image src={currentStory.avatar_url} alt="avatar" fill className="object-cover" />
@@ -119,55 +129,18 @@ export default function StoryViewer({ stories, startIndex = 0, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="ml-auto text-white/80 hover:text-white cursor-pointer z-20 text-xl w-8 h-8 flex items-center justify-center"
+            className="ml-auto text-white/80 hover:text-white cursor-pointer text-xl w-8 h-8 flex items-center justify-center"
           >
             ✕
           </button>
-        </div> */}
-
-
-
-        {/* ✅ رفع الـ z-index للـ header فوق الـ tap areas */}
-<div className="absolute top-7 left-3 right-3 flex items-center gap-2 z-20"> {/* z-20 مش z-10 */}
-  <div className="w-8 h-8 rounded-full overflow-hidden border border-white/50 relative flex-shrink-0">
-       {currentStory.avatar_url ? (
-              <Image src={currentStory.avatar_url} alt="avatar" fill className="object-cover" />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center text-white text-sm font-bold"
-                style={{ background: currentStory.avatar_bg }}
-              >
-                {currentStory.username?.[0]?.toUpperCase()}
-              </div>
-            )}
-  </div>
-  <div>
-    <p className="text-white text-sm font-medium">{currentStory.username}</p>
-         <p className="text-white/60 text-xs">
-              {new Date(currentStory.created_at).toLocaleTimeString("ar-EG", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
-  </div>
-  <button
-    onClick={onClose}
-    className="ml-auto text-white/80 hover:text-white cursor-pointer text-xl w-8 h-8 flex items-center justify-center z-20" 
-  >
-    ✕
-  </button>
-</div>
-
-{/* Tap Areas — z-10 تحت الـ header */}
-<button className="absolute left-0 top-0 w-1/3 h-full z-10" onClick={prevStory} />
-<button className="absolute right-0 top-0 w-1/3 h-full z-10" onClick={nextStory} />
+        </div>
 
         {/* Tap Areas */}
         <button className="absolute left-0 top-0 w-1/3 h-full z-10" onClick={prevStory} />
         <button className="absolute right-0 top-0 w-1/3 h-full z-10" onClick={nextStory} />
 
         {/* Footer */}
-        <div className="absolute bottom-4 left-3 right-3 z-10 flex items-center gap-2">
+        <div className="absolute bottom-4 left-3 right-3 z-20 flex items-center gap-2">
           <input
             placeholder="إرسال رسالة..."
             className="flex-1 bg-white/10 border border-white/30 rounded-full px-4 py-2 text-white text-sm placeholder-white/50 outline-none"
