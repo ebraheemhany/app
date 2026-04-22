@@ -5,9 +5,10 @@ import Image from "next/image";
 import LeftSection from "@/component/leftSection/leftSection";
 import RighteSection from "@/component/righteSection/righteSection";
 import { useNotifications } from "@/Query/useNotification";
-import { useGetUsers } from "@/Query/useGetUsers"; // ← جيب الـ user من الـ auth بتاعك
+
 import { formatDistanceToNow } from "date-fns";
 import type { NotificationTyping } from "@/typing/type";
+import { useGetCurrentUser } from "@/Query/useGetUserByid";
 
 // ✅ بدل الـ static data
 const tabs = [
@@ -35,7 +36,9 @@ const getMessage = (type: string, username: string) => {
 
 export default function NotificationsPage() {
   const [tab, setTab] = useState("all");
-  const { user } = useGetUsers(); // ← الـ current user
+  const { data } = useGetCurrentUser(); // ← الـ current user
+
+  console.log(data?.profile);
 
   // ✅ بدل notificationsData الـ static
   const {
@@ -45,7 +48,7 @@ export default function NotificationsPage() {
     hasMore,
     loadMore,
     markAllAsRead,
-  } = useNotifications(user?.id ?? "");
+  } = useNotifications(data?.profile.id ?? "");
 
   // ✅ فلتر بالـ tab
   const filtered: NotificationTyping[] =
