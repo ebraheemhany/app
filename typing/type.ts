@@ -1,9 +1,6 @@
-
-
-// types/notification.ts
 export type NotificationType = 'like' | 'comment' | 'message' | 'follow'
 
-export interface NotificationTyping {
+export interface AppNotification {
   id: string
   receiver_id: string
   sender_id: string
@@ -22,14 +19,3 @@ export interface NotificationTyping {
     content: string
   } | null
 }
-
-
-
-
-
-
-
-
-
-
-

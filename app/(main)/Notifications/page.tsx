@@ -7,7 +7,7 @@ import RighteSection from "@/component/righteSection/righteSection";
 import { useNotifications } from "@/Query/useNotification";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import type { NotificationTyping } from "@/typing/type";
+import { AppNotification } from "@/typing/type";
 import { useGetCurrentUser } from "@/Query/useGetUserByid";
 import { X } from "lucide-react";
 
@@ -50,11 +50,11 @@ export default function NotificationsPage() {
     removeNotification, // ✅ من الـ hook مباشرة
   } = useNotifications(userId);
 
-  const filtered: NotificationTyping[] =
+  const filtered: AppNotification[] =
     tab === "all" ? notifications : notifications.filter((n) => n.type === tab);
 
   const router = useRouter();
-  const handleNotificationClick = (notif: any) => {
+  const handleNotificationClick = (notif: AppNotification) => {
     switch (notif.type) {
       case "like":
       case "comment":
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
         if (notif.sender_id) router.push(`/OuherProfile/${notif.sender_id}`);
         break;
       case "message":
-        if (notif.chat_id) router.push(`/Messages?conv=${notif.chat_id}`);
+        if (notif.message_id) router.push(`/Messages?conv=${notif.message_id}`);
         break;
     }
   };
