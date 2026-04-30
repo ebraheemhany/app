@@ -31,8 +31,8 @@ const TrendingPosts = () => {
   }, []);
 
   return (
-    <div>
-      <p className="text-xs text-gray-500 mb-3">منشورات مقترحة</p>
+    <div className="mx-2 mb-20">
+      <p className="text-[14px] text-gray-300 mb-3">Suggested posts</p>
 
       <div className="columns-2 md:columns-3 gap-3">
         {posts.slice(0, 3).map((post) => (

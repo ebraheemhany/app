@@ -15,7 +15,7 @@ type PropsValue = {
 
 const LikesCompo = ({ postId, currentUser }: PropsValue) => {
   const userId = currentUser?.id;
-
+  console.log("jfsgjvsdfugayresyuf", currentUser);
   const { data, isLoading } = useLikes(postId, userId);
   const toggleLike = useToggleLike();
 
@@ -58,7 +58,7 @@ const LikesCompo = ({ postId, currentUser }: PropsValue) => {
         stroke="currentColor"
       />
       {data?.count ?? 0}
-      {!userId && <span className="text-[11px] text-gray-400">Sign in</span>}
+      {/* {!userId && <span className="text-[11px] text-gray-400">Sign in</span>} */}
     </button>
   );
 };

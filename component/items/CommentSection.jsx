@@ -13,24 +13,53 @@ export default function CommentSection({ post }) {
   const commentsCount = post?.comments_count ?? 0;
 
   const [currentUser, setCurrentUser] = useState(null);
-
+    console.log("jjjjjjjjjjjjjjjjjjj" , currentUser)
   // get current user
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: profile } = await supabase
+      const { data: { user }, error } = await supabase.auth.getUser();
+    console.log("user from supabase:", user);
+      if (user && !error) {
+        const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("username, avatar_url")
           .eq("id", user.id)
           .single();
 
-        setCurrentUser({ ...user, profile });
+        if (!profileError) {
+          setCurrentUser({ ...user, profile });
+        } else {
+          console.error("Profile fetch error:", profileError);
+          setCurrentUser({ ...user, profile: null });
+        }
+      } else {
+        setCurrentUser(null);
       }
     };
 
     getUser();
+
+    // Listen to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("username, avatar_url")
+          .eq("id", session.user.id)
+          .single();
+
+        if (!profileError) {
+          setCurrentUser({ ...session.user, profile });
+        } else {
+          console.error("Profile fetch error:", profileError);
+          setCurrentUser({ ...session.user, profile: null });
+        }
+      } else {
+        setCurrentUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const getInitials = (username) => username?.charAt(0).toUpperCase() || "?";
@@ -59,13 +88,13 @@ export default function CommentSection({ post }) {
         
         {post.image_url && (
             <div className="mb-3 rounded-xl overflow-hidden">
-                <Image src={post.image_url} alt="post" width={400} height={300} className="w-full object-cover" />
+                <Image src={post.image_url} alt="post" width={300} height={300} className="w-full  object-cover" />
             </div>
         )}
 {
   post.video_url && (
-    <div className="mb-3 rounded-xl overflow-hidden" >
-      <video src={post.video_url} controls className="w-full" />
+    <div className="mb-3 rounded-xl overflow-hidden " >
+      <video src={post.video_url} controls className="w-full h-[400px]" />
     </div>
   )
 }

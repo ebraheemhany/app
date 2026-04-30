@@ -47,34 +47,40 @@ export function useConversations(currentUserId?: string) {
     if (error || !data) return;
 
     const enriched = await Promise.all(
-      data.map(async (conv) => {
-        const otherUserId =
-          conv.participant_one === currentUserId
-            ? conv.participant_two
-            : conv.participant_one;
+      data
+        .map(async (conv) => {
+          const otherUserId =
+            conv.participant_one === currentUserId
+              ? conv.participant_two
+              : conv.participant_one;
 
-        // user profile
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("id, username, avatar_url")
-          .eq("id", otherUserId)
-          .single();
+          // تخطي المحادثات حيث يكون المستخدم الآخر هو نفس المستخدم الحالي
+          if (otherUserId === currentUserId) {
+            return null;
+          }
 
-        // unread count
-        const { count } = await supabase
-          .from("messages")
-          .select("id", { count: "exact", head: true })
-          .eq("conversation_id", conv.id)
-          .eq("is_read", false)
-          .neq("sender_id", currentUserId);
+          // user profile
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id, username, avatar_url")
+            .eq("id", otherUserId)
+            .single();
 
-        return {
-          ...conv,
-          otherUser: profile || undefined,
-          unreadCount: count || 0,
-        };
-      })
-    );
+          // unread count
+          const { count } = await supabase
+            .from("messages")
+            .select("id", { count: "exact", head: true })
+            .eq("conversation_id", conv.id)
+            .eq("is_read", false)
+            .neq("sender_id", currentUserId);
+
+          return {
+            ...conv,
+            otherUser: profile || undefined,
+            unreadCount: count || 0,
+          };
+        })
+    ).then((results) => results.filter((r) => r !== null) as Conversation[]);
 
     setConversations(enriched);
     setLoading(false);
@@ -104,6 +110,40 @@ export function useConversations(currentUserId?: string) {
   }, [fetchConversations, currentUserId]);
 
   return { conversations, loading, refetch: fetchConversations };
+}
+
+// ─────────────── Start Conversation ───────────────
+export async function startConversation(
+  currentUserId: string,
+  otherUserId: string
+): Promise<string> {
+  // تحقق من وجود محادثة بين المستخدمين
+  const { data: existing } = await supabase
+    .from("conversations")
+    .select("id")
+    .or(
+      `and(participant_one.eq.${currentUserId},participant_two.eq.${otherUserId}),and(participant_one.eq.${otherUserId},participant_two.eq.${currentUserId})`
+    )
+    .single();
+
+  if (existing) {
+    return existing.id;
+  }
+
+  // إنشاء محادثة جديدة
+  const { data: newConv, error } = await supabase
+    .from("conversations")
+    .insert({
+      participant_one: currentUserId,
+      participant_two: otherUserId,
+      last_message: null,
+      last_message_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (error) throw error;
+  return newConv.id;
 }
 
 // ─────────────── Chat ───────────────

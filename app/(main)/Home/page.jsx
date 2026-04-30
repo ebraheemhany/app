@@ -23,7 +23,7 @@ const Home = () => {
 
           {/* right section */}
           <div className="w-[20%] hidden lg:block">
-            <div className=" fixed top-0  w-[16%]">
+            <div className=" fixed top-0  w-[20%]">
               <RighteSection />
             </div>
           </div>

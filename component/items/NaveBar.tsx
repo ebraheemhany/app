@@ -1,57 +1,114 @@
-import { Home, Search, Plus, Bell, User } from "lucide-react";
+"use client";
+
+import { Home, Search, Bell, MessageSquareMore } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function BottomNav() {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path;
+
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0f1117] border-t border-gray-800 px-6 py-3">
       <div className="flex items-center justify-between max-w-md mx-auto">
-        {/* Home - Active State */}
+        {/* Home */}
         <Link href="/">
           <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="bg-[#6366f1] p-1.5 rounded-lg text-white">
-              <Home size={15} fill="currentColor" />
+            <div
+              className={`p-1.5 rounded-lg ${
+                isActive("/") ? "bg-[#6366f1] text-white" : "text-gray-500"
+              }`}
+            >
+              <Home size={15} fill={isActive("/") ? "currentColor" : "none"} />
             </div>
-            <span className="text-[#6366f1] text-xs font-medium">Home</span>
+            <span
+              className={`text-xs font-medium ${
+                isActive("/") ? "text-[#6366f1]" : "text-gray-500"
+              }`}
+            >
+              Home
+            </span>
           </div>
         </Link>
 
         {/* Explore */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group">
-          <Search
-            size={20}
-            className="text-gray-500 group-hover:text-gray-300"
-          />
-          <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
-            Explore
-          </span>
-        </div>
-
-        {/* Create */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group">
-          <Plus size={20} className="text-gray-500 group-hover:text-gray-300" />
-          <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
-            Create
-          </span>
-        </div>
-
-        {/* Alerts */}
-        <div className="flex flex-col items-center gap-1 cursor-pointer group relative">
-          <Bell size={20} className="text-gray-500 group-hover:text-gray-300" />
-          {/* Notification Dot */}
-          <span className="absolute top-0 right-1 w-2 h-2 bg-orange-600 rounded-full border border-[#0f1117]"></span>
-          <span className="text-gray-500 text-xs group-hover:text-gray-300 pt-1.5">
-            Alerts
-          </span>
-        </div>
-
-        {/* Profile */}
-        <Link href="/ProfilePage">
-          <div className="flex flex-col items-center gap-1 cursor-pointer group">
-            <div className="ml-1 w-7 h-7 rounded-full bg-blue-700 flex items-center justify-center text-white  text-xs cursor-pointer shadow-sm">
-              AM
+        <Link href="/explore">
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div
+              className={`p-1.5 rounded-lg ${
+                isActive("/explore")
+                  ? "bg-[#6366f1] text-white"
+                  : "text-gray-500"
+              }`}
+            >
+              <Search
+                size={15}
+                fill={isActive("/explore") ? "currentColor" : "none"}
+              />
             </div>
-            <span className="text-gray-500 text-xs group-hover:text-gray-300">
-              Profile
+            <span
+              className={`text-xs font-medium ${
+                isActive("/explore") ? "text-[#6366f1]" : "text-gray-500"
+              }`}
+            >
+              Explore
+            </span>
+          </div>
+        </Link>
+
+        {/* Notifications */}
+        <Link href="/Notifications">
+          <div className="flex flex-col items-center gap-1 cursor-pointer relative">
+            <div
+              className={`p-1.5 rounded-lg ${
+                isActive("/Notifications")
+                  ? "bg-[#6366f1] text-white"
+                  : "text-gray-500"
+              }`}
+            >
+              <Bell
+                size={15}
+                fill={isActive("/Notifications") ? "currentColor" : "none"}
+              />
+            </div>
+
+            {/* Notification Dot */}
+            {isActive("/Notifications") && (
+              <span className="absolute top-5 right-0 w-2 h-2 bg-orange-600 rounded-full border border-[#0f1117]"></span>
+            )}
+
+            <span
+              className={`text-xs font-medium ${
+                isActive("/Notifications") ? "text-[#6366f1]" : "text-gray-500"
+              }`}
+            >
+              Alerts
+            </span>
+          </div>
+        </Link>
+
+        {/* Chat */}
+        <Link href="/Messages">
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div
+              className={`p-1.5 rounded-lg ${
+                isActive("/Messages")
+                  ? "bg-[#6366f1] text-white"
+                  : "text-gray-500"
+              }`}
+            >
+              <MessageSquareMore
+                size={15}
+                fill={isActive("/Messages") ? "currentColor" : "none"}
+              />
+            </div>
+            <span
+              className={`text-xs font-medium ${
+                isActive("/Messages") ? "text-[#6366f1]" : "text-gray-500"
+              }`}
+            >
+              Chat
             </span>
           </div>
         </Link>

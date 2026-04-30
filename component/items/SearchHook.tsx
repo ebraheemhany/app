@@ -1,4 +1,3 @@
-// hooks/useSearch.ts
 import { supabase } from "@/lib/supabase";
 import { useState, useCallback } from "react";
 
@@ -15,6 +14,7 @@ export const useSearch = () => {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
 
+  // 1. تعريف دالة البحث الأساسية
   const search = useCallback(async (q: string) => {
     setQuery(q);
 
@@ -47,5 +47,26 @@ export const useSearch = () => {
     setLoading(false);
   }, []);
 
-  return { query, results, loading, search };
+  // 2. دالة موحدة لحفظ البحث وتنفيذه
+  const executeSearch = useCallback(
+    (term: string) => {
+      if (!term.trim()) return;
+
+      // حفظ في LocalStorage
+      const history = JSON.parse(
+        localStorage.getItem("search_history") || "[]",
+      );
+      const newHistory = [
+        term,
+        ...history.filter((h: string) => h !== term),
+      ].slice(0, 5);
+      localStorage.setItem("search_history", JSON.stringify(newHistory));
+
+      // تنفيذ البحث
+      search(term);
+    },
+    [search],
+  );
+
+  return { query, results, loading, search, executeSearch };
 };
